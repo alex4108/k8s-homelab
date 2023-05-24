@@ -1,0 +1,87 @@
+---
+- hosts: coordinators
+  become: yes
+  become_method: sudo
+  tasks:
+    - name: "Update Packages"
+      apt:
+        upgrade: yes
+        update_cache: true
+        cache_valid_time: 3600
+        force_apt_get: true  
+    - name: "Install base packages"
+      apt:
+        pkg:
+        - wget
+        - curl
+        - vim
+        - git
+        - curl
+        - gnupg2
+        - software-properties-common
+        - apt-transport-https
+        - ca-certificates
+    - name: Add docker repo
+      shell: |
+        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+        sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+    - name: Add kube repo
+      shell: | 
+        if [[ ! -f "/etc/apt/trusted.gpg.d/k8s.gpg" ]]; then
+          curl -fsSL  https://packages.cloud.google.com/apt/doc/apt-key.gpg|sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/k8s.gpg
+        fi
+        curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+        echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+    - name: "apt update"
+      shell: apt-get -y update
+    - name: "Install container packages"
+      apt:
+        pkg:
+        - containerd.io
+        - kubelet
+        - kubeadm
+        - kubectl
+    - name: Hold kubeadm
+      dpkg_selections:
+        name: kubeadm
+        selection: hold
+    - name: Hold kubectl
+      dpkg_selections:
+        name: kubectl
+        selection: hold
+    - name: Hold kubelet
+      dpkg_selections:
+        name: kubelet
+        selection: hold  
+    - name: Disable swap space now
+      shell: |
+        swapoff -a
+    - name: Disable swap permanently
+      replace:
+        path: /etc/fstab
+        regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
+        replace: '# \1'
+    - name: Enable kernel modules
+      shell: | 
+        modprobe overlay
+        modprobe br_netfilter
+    - name: Configure sysctl
+      shell: | 
+        tee /etc/sysctl.d/kubernetes.conf<<EOF
+        net.bridge.bridge-nf-call-ip6tables = 1
+        net.bridge.bridge-nf-call-iptables = 1
+        net.ipv4.ip_forward = 1
+        EOF
+    - name: Reload sysctl
+      shell: | 
+        sysctl --system
+    - name: Configure containerd
+      shell: | 
+        mkdir -p /etc/containerd
+        containerd config default>/etc/containerd/config.toml
+    - name: Start containerd
+      shell: | 
+        systemctl restart containerd && systemctl enable containerd && systemctl status containerd
+    - name: "Clean repo cache"
+      apt:
+        clean: yes

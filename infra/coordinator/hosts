@@ -1,0 +1,11 @@
+[coordinators]
+k8s-master-1.home.arpa
+k8s-master-2.home.arpa
+k8s-master-3.home.arpa
+
+[coordinator-1]
+k8s-master-1.home.arpa
+
+[coordinator-others]
+k8s-master-2.home.arpa
+k8s-master-3.home.arpa

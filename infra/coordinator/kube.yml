@@ -1,0 +1,26 @@
+---
+- hosts: coordinator-1
+  become: yes
+  become_method: sudo
+  tasks:
+    - name: "Enable kubelet"
+      shell: systemctl enable kubelet
+    - name: "kubeadm pull"
+      shell: "kubeadm config images pull"
+    - name: kubeadm init
+      shell: "kubeadm init --control-plane-endpoint \"172.25.4.1\" --pod-network-cidr \"10.244.0.0/16\" --upload-certs > /var/log/kubeadm-init.log"
+    - name: get join command
+      shell: "cat /var/log/kubeadm-init.log | grep \"kubeadm join\" > /var/log/kubeadm-join-cmd"
+    - name: export join command to ansible...
+      register: join_command
+      shell: cat /var/log/kubeadm-join-sdm
+    - name: install flannel
+      shell: | 
+        wget -O /tmp/kube-flannel.yml https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml
+        kubectl apply -f /tmp/kube-flannel.yml
+- hosts: coordinator-others
+  become: yes
+  become_method: sudo
+  tasks:
+    - name: run kubeadm join
+      shell: join_command.stdout
