@@ -19,10 +19,20 @@
     - name: Create token w/ infinite TTL
       shell: kubeadm token create --ttl 0 --print-join-command
       register: join_command
-    # - name: install flannel
-    #   shell: | 
-    #     wget -O /tmp/kube-flannel.yml https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml
-    #     kubectl apply -f /tmp/kube-flannel.yml
+    - name: save tokens
+      add_host:
+        name:   "K8S_TOKEN_HOLDER"
+        token:  "{{ join_command.stdout }}"
+        hash:   "{{ control_plane_cert.stdout }}"
+    - name: copy kubeconfig
+      shell: mkdir -p /root/.kube && cp /etc/kubernetes/admin.conf /root/.kube/config
+    - name: download kubectl
+      fetch:
+        src: /etc/kubernetes/admin.conf
+        dest: kubeconfig
+    - name: install flannel
+      shell: | 
+        kubectl apply -f https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml
     # - name: install metallb
     #   shell: | 
     #     kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.13.7/config/manifests/metallb-native.yaml
@@ -34,9 +44,6 @@
   become_method: sudo
   tasks:
     - name: run kubeadm join
-      shell: "{{ join_command.stdout }} --control-plane --certificate-key {{ control_plane_cert.stdout }}"
+      shell: "{{ hostvars['K8S_TOKEN_HOLDER']['token'] }} --control-plane --certificate-key {{ hostvars['K8S_TOKEN_HOLDER']['hash'] }}"
     - name: save join command
-      ansible.builtin.copy:
-        content: "{{join_command.stdout}}"
-        dest: ./.join_command
-        delegate_to: localhost
+      local_action: copy content="{{ hostvars['K8S_TOKEN_HOLDER']['token'] }}" dest=./.join_command
