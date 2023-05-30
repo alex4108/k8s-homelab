@@ -1,0 +1,31 @@
+#cloud-config
+hostname: ubuntu-2004
+manage_etc_hosts: true
+user: alex
+# "secret"
+password: $1$SaltSalt$YhgRYajLPrYevs14poKBQ0
+ssh_authorized_keys:
+  - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCvZYwDj1tv+gDiWjmWvzgequqBj6+pM3DKHVyhLQnqG/uS9v5Ll2mqTUeFIkjNXe0OCjwD8cOBPCKy3uljMFULOoRHmkqvZQ9FLmxV1y/yTJ23f45bH2VIUa0Ew5VM7gnxgyCby0rgLKUIhsk1cpNp/Z/szoU12kp5nZUihUyVcvT83uWdl9FOkoBJvXRA359mc1swHQt2xWHiq61u4QFBOTqxU90CbU1vvBqC9503kXzz2nkXRcyMOh52Tw7H3HhRpEA3Qgtn8g4wKzKuelgguGRd8g0cczEdp52wMqZ8NJ0EzleRBQ5J6agq+fQE2vp5RjXiGK3i8rvG6vyY5+LCpJ9Tg6FRL09QrUTEy7RcOoocUElgQj7IigDzGDedFHy71oLpPTiifp8W1yPBg/il15+XVWq97enLwi+Vfb4PaWAhQGGcUFMnTTn2/j2eQBH1GrRPozcPN7Rrw5NE2VbDjMg1WNjbb4BjvclG2/PnUD13dSR58NN6ZqwPhNfEGY9ETzoXoZkaX3i2tliTHqnV2BYUsbF+4bOo2gTHSVTz/vDfvzLuf2Fc9JIrOaNR648YVQmcJwHyOV2Mi7iYvkmO09L40pz0OZicPIowzLT/yUwlfKQDWq82g1nmOa4VL46QSxd9S/kOek93Kv/qhlR7ZL84xF8qPxlHF76HKE0INw== alex@ALEX-DESKTOP2
+chpasswd:
+  expire: False
+users:
+  - default
+growpart:
+  mode: auto
+  devices: ['/']
+  ignore_growroot_disabled: false
+runcmd:
+  - until ping -c1 ap-southeast-2.ec2.archive.ubuntu.com &>/dev/null; do echo "waiting for networking to initialise"; done
+  - apt update
+  - "echo \"$(hostname)-$(uuidgen | head -c 6)\" > /tmp/new-hostname"
+  - "echo '127.0.0.1 localhost' > /etc/hosts"
+  - "echo \"127.0.0.1 $(cat /tmp/new-hostname)\" >> /etc/hosts"
+  - "hostnamectl set-hostname $(cat /tmp/new-hostname)"
+  - modprobe br_netfilter
+  - modprobe overlay
+  - apt install -y qemu-guest-agent
+  - systemctl enable qemu-guest-agent
+  - systemctl start qemu-guest-agent
+  - systemctl enable multipath-tools.service
+  - systemctl enable open-iscsi.service
+  - systemctl restart kubelet

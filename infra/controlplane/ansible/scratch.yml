@@ -1,0 +1,6 @@
+- hosts: controlplanes
+  become: yes
+  become_method: sudo
+  tasks:
+    - name: "modprobe"
+      shell: modprobe overlay && modprobe br_netfilter

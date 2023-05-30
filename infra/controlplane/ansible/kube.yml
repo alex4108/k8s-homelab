@@ -1,0 +1,42 @@
+---
+- hosts: controlplane-others
+  become: yes
+  become_method: sudo
+  tasks:
+    - name: "Enable kubelet"
+      shell: systemctl enable kubelet
+    - name: "kubeadm pull"
+      shell: "kubeadm config images pull"
+- hosts: controlplane-1
+  become: yes
+  become_method: sudo
+  tasks:
+    - name: kubeadm init
+      shell: "kubeadm init --control-plane-endpoint \"172.25.4.1\" --pod-network-cidr \"10.244.0.0/16\" --upload-certs"
+    - name: get control plane cert
+      shell: "kubeadm init phase upload-certs --upload-certs | tail -n 1"
+      register: control_plane_cert
+    - name: Create token w/ infinite TTL
+      shell: kubeadm token create --ttl 0 --print-join-command
+      register: join_command
+    # - name: install flannel
+    #   shell: | 
+    #     wget -O /tmp/kube-flannel.yml https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml
+    #     kubectl apply -f /tmp/kube-flannel.yml
+    # - name: install metallb
+    #   shell: | 
+    #     kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.13.7/config/manifests/metallb-native.yaml
+    #     # TODO apply the configmap
+    # - name: install democratic-csi for iscsi csi
+    #     https://github.com/democratic-csi/democratic-csi
+- hosts: controlplane-others
+  become: yes
+  become_method: sudo
+  tasks:
+    - name: run kubeadm join
+      shell: "{{ join_command.stdout }} --control-plane --certificate-key {{ control_plane_cert.stdout }}"
+    - name: save join command
+      ansible.builtin.copy:
+        content: "{{join_command.stdout}}"
+        dest: ./.join_command
+        delegate_to: localhost

@@ -1,0 +1,5 @@
+* make master nodes from terraform
+* run ansible to init controlplane
+
+* write terraform + cloudinit extension to fire up workers
+* cloud-init should have join cmd

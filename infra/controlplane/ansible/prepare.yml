@@ -1,5 +1,5 @@
 ---
-- hosts: coordinators
+- hosts: controlplanes
   become: yes
   become_method: sudo
   tasks:
@@ -12,15 +12,9 @@
     - name: "Install base packages"
       apt:
         pkg:
-        - wget
-        - curl
-        - vim
-        - git
-        - curl
-        - gnupg2
-        - software-properties-common
-        - apt-transport-https
-        - ca-certificates
+        - qemu-guest-agent
+    - name: Enable qemu guest agent
+      shell: systemctl enable qemu-guest-agent && systemctl start qemu-guest-agent
     - name: Add docker repo
       shell: |
         curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
