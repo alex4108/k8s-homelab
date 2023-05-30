@@ -1,4 +1,10 @@
 #!/usr/bin/env bash
+set -eux
+
+if [[ "${PROXMOX_HOST}" == "" ]]; then
+    echo "no proxmxox host"
+    exit 1
+fi
 
 bash 1-bootstrap.sh
 bash 2-customize.sh

@@ -21,25 +21,5 @@ variable "controlplane_cpu" {
 locals {
   timestamp   = replace(replace(timestamp(), "-", ""), ":", "")
   target_node = "pve-1"
-  controlplanes = {
-    "1" = {
-      target_node = "pve-1"
-      hastate     = "" # no HA
-      hagroup     = ""
-      id          = 9010
-    },
-    "2" = {
-      target_node = "pve-1"
-      hastate     = "" # no HA
-      hagroup     = ""
-      id          = 9011
-    },
-    "3" = {
-      target_node = "pve-1"
-      hastate     = ""
-      hagroup     = ""
-      id          = 9012
-    }
-  }
 }
 
