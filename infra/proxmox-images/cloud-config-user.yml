@@ -14,13 +14,23 @@ growpart:
   mode: auto
   devices: ['/']
   ignore_growroot_disabled: false
+write_files:
+  - path: /tmp/netplan
+    permissions: "0644"
+    content: |
+      network:
+        version: 2
+        renderer: networkd
+        ethernets:
+          ens18:
+            dhcp4: true
 runcmd:
   - echo \"$(hostname)-$(uuidgen | head -c 6)\" > /tmp/new-hostname
   - echo '127.0.0.1 localhost' > /etc/hosts
   - echo \"127.0.0.1 $(cat /tmp/new-hostname)\" >> /etc/hosts
   - hostnamectl set-hostname $(cat /tmp/new-hostname)
-  - "echo \"new hostname: $(cat /tmp/new-hostname)\""
-  - "echo -e \"network:\n  version: 2\n  renderer: networkd\n  ethernets:\n    ens18:\n      dhcp4: true\" > /tmp/netplan"
+  - hostnamectl set-hostname $(cat /tmp/new-hostname) --static
+  - "echo \"new hostname: $(hostname)\""
   - echo "new netplan"
   - cat /tmp/netplan
   - sudo mv /tmp/netplan /etc/netplan/99_config.yaml
@@ -37,4 +47,3 @@ runcmd:
   - systemctl enable multipath-tools.service
   - systemctl enable open-iscsi.service
   - systemctl restart kubelet
-  - shutdown -r now
