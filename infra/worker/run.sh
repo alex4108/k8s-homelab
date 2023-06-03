@@ -4,6 +4,7 @@ set -eux
 SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 
 export TF_VAR_template_id="$(cat $SCRIPTPATH/../proxmox-images/.template_server_name | awk '{print $2}')"
+cd ./terraform 
 terraform init
 
 if [[ "$PM_USER" == "" || "$PM_PASS" == "" ]]; then

@@ -1,0 +1,21 @@
+- hosts: controlplane-1
+  become: yes
+  become_method: sudo
+  tasks:
+    - name: get control plane cert
+      shell: "kubeadm init phase upload-certs --upload-certs | tail -n 1"
+      register: control_plane_cert
+    - name: Create token w/ infinite TTL
+      shell: kubeadm token create --ttl 0 --print-join-command
+      register: join_command
+    - name: save tokens
+      add_host:
+        name:   "K8S_TOKEN_HOLDER"
+        token:  "{{ join_command.stdout }}"
+        hash:   "{{ control_plane_cert.stdout }}"
+- hosts: controlplane-others
+  become: yes
+  become_method: sudo
+  tasks:
+    - name: save join command
+      local_action: copy content="{{ hostvars['K8S_TOKEN_HOLDER']['token'] }}" dest=./.join_command

@@ -15,11 +15,12 @@ resource "proxmox_vm_qemu" "controlplane_1" {
 }
 
 resource "time_sleep" "wait_1" {
+  depends_on = [ proxmox_vm_qemu.controlplane_1 ]
   create_duration = "3m"
 }
 
 resource "proxmox_vm_qemu" "controlplane_2" {
-  depends_on  = time_sleep.wait_1
+  depends_on  = [time_sleep.wait_1]
   vmid        = 9011
   name        = "k8s-master-${local.timestamp}-2"
   target_node = local.target_node
@@ -37,12 +38,12 @@ resource "proxmox_vm_qemu" "controlplane_2" {
 
 
 resource "time_sleep" "wait_2" {
-  depends_on = proxmox_vm_qemu.controlplane_2
+  depends_on = [proxmox_vm_qemu.controlplane_2]
   create_duration = "3m"
 }
 
 resource "proxmox_vm_qemu" "controlplane_3" {
-  depends_on  = time_sleep.wait_2
+  depends_on  = [time_sleep.wait_2]
   vmid        = 9012
   name        = "k8s-master-${local.timestamp}-3"
   target_node = local.target_node

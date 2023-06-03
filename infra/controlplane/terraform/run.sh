@@ -11,5 +11,6 @@ if [[ "$PM_USER" == "" || "$PM_PASS" == "" ]]; then
 fi
 
 terraform plan -out=plan.out
-bash $SCRIPTPATH/approve.sh
+#bash $SCRIPTPATH/approve.sh
 terraform apply -parallelism=1 plan.out 
+bash $SCRIPTPATH/post.sh

@@ -6,5 +6,5 @@ export PROXMOX_USER=root
 
 proxmox_host=${PROXMOX_HOST} make image
 proxmox_host=${PROXMOX_HOST} make controlplane
-proxmox_host=${PROXMOX_HOST} make workers
+proxmox_host=${PROXMOX_HOST} count=3 make workers
 

@@ -15,17 +15,26 @@ growpart:
   devices: ['/']
   ignore_growroot_disabled: false
 runcmd:
+  - echo \"$(hostname)-$(uuidgen | head -c 6)\" > /tmp/new-hostname
+  - echo '127.0.0.1 localhost' > /etc/hosts
+  - echo \"127.0.0.1 $(cat /tmp/new-hostname)\" >> /etc/hosts
+  - hostnamectl set-hostname $(cat /tmp/new-hostname)
+  - "echo \"new hostname: $(cat /tmp/new-hostname)\""
+  - "echo -e \"network:\n  version: 2\n  renderer: networkd\n  ethernets:\n    ens18:\n      dhcp4: true\" > /tmp/netplan"
+  - echo "new netplan"
+  - cat /tmp/netplan
+  - sudo mv /tmp/netplan /etc/netplan/99_config.yaml
+  - netplan apply
   - until ping -c1 ap-southeast-2.ec2.archive.ubuntu.com &>/dev/null; do echo "waiting for networking to initialise"; done
   - apt update
-  - "echo \"$(hostname)-$(uuidgen | head -c 6)\" > /tmp/new-hostname"
-  - "echo '127.0.0.1 localhost' > /etc/hosts"
-  - "echo \"127.0.0.1 $(cat /tmp/new-hostname)\" >> /etc/hosts"
-  - "hostnamectl set-hostname $(cat /tmp/new-hostname)"
   - modprobe br_netfilter
+  - echo "br_netfilter" | sudo tee -a /etc/modules
   - modprobe overlay
+  - echo "overlay" | sudo tee -a /etc/modules
   - apt install -y qemu-guest-agent
   - systemctl enable qemu-guest-agent
   - systemctl start qemu-guest-agent
   - systemctl enable multipath-tools.service
   - systemctl enable open-iscsi.service
   - systemctl restart kubelet
+  - shutdown -r now

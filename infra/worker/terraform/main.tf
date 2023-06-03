@@ -1,16 +1,20 @@
-resource "proxmox_vm_qemu" "worker" {
-  for_each = local.workers
-  vmid = tonumber("${local.start_id}${each.key}")
-  name        = "k8s-worker-${local.timestamp}-${each.key}"
-  target_node = local.target_node
-  clone = var.template_id 
-  onboot = true # Start nodes on boot
-  agent = 1 # Qemu guest agent
-  memory = var.memory
-  cores = var.cpu
-  scsihw = "virtio-scsi-pci"
-  cicustom = "network=local:snippets/kube-cloudinit-network.yml,user=local:snippets/kube-worker-cloudinit-user.yml"
-  vga {
-    type = "virtio"
+
+resource "null_resource" "set_initial_state" {
+  provisioner "local-exec" {
+    interpreter = ["bash", "-c"]
+    command     = "echo \"1\" > counter"
   }
+}
+
+
+
+module "worker" {
+  for_each = local.workers
+  vmid    = tonumber("${var.start_id}${each.value}")
+  index = each.value
+  cpu = var.cpu
+  memory = var.memory
+  target_node = local.target_node
+  template_id = var.template_id
+  source   = "./worker"
 }

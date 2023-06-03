@@ -16,6 +16,8 @@ make prep
 
 This step creates an Ubuntu 20 template to be used for faster deployment of VMs.
 
+`./infra/proxmox-images/`
+
 * Ensure you can login as root using SSH to the proxmox host before running make image
 * The current user's pubkey will be added to `kubeuser` on the image
 * The root password of the image will be displayed on the console during creation!
@@ -24,6 +26,10 @@ This step creates an Ubuntu 20 template to be used for faster deployment of VMs.
 `proxmox_host=proxmox_ip_or_dns make image` 
 
 ### Deploy control plane
+
+This step uses Terraform & Ansible to deploy control plane VMs & init the control plane
+
+`./infra/controlplane`
 
 * Ensure the local block target_node names are updated to reflect your environment
 * Ensure the terraform.tf has your proxmox IP/domain
@@ -41,7 +47,11 @@ This step will yield a 3-node control plane
 
 ### Deploy workers via template
 
-* Terraform?
+```
+export PM_USER="your proxmox username"
+export PM_PASS="your proxmox password"
+proxmox_host=proxmox_ip_or_dns count=num_workers make workers
+```
 
 ### Destroy the environment
 

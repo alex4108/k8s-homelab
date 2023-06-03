@@ -1,5 +1,9 @@
-* make master nodes from terraform
-* run ansible to init controlplane
-
-* write terraform + cloudinit extension to fire up workers
-* cloud-init should have join cmd
+* fix cloud-init so hostnames aren't clashing and causing dupe dhcp leases
+    * can't use shell in cloud-init hostname field, will need a per-VM cloud-init!?
+    * can I set the hostname in runcmd, disable dhcp via netplan, then _manually_ enable DHCP?
+* fix `make controlplane` crashes on ansible
+* join workers
+* install democratic
+* install metallb
+* configure democratic
+* configure metallb

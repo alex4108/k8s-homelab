@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-set -eux
+# no set -e because we might be in half-deployed state and still need cleanup
+
+set -ux
 
 SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 proxmox_ssh="ssh $PROXMOX_USER@$PROXMOX_HOST"
