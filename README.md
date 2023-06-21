@@ -6,6 +6,10 @@ Needs `make`, `python3`
 
 ## Get Started
 
+Installs dependencies and stuff to do the work on your Ubuntu (WSL?) installation.
+
+I haven't tried to containerize this yet.  Godspeed if you do.
+
 ```
 make prep
 ```

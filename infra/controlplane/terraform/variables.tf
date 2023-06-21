@@ -17,6 +17,19 @@ variable "controlplane_cpu" {
   default     = 2
 }
 
+variable "cp1_hostname" { 
+  type = string
+}
+
+variable "cp2_hostname" { 
+  type = string
+}
+
+variable "cp3_hostname" { 
+  type = string
+}
+
+
 
 locals {
   timestamp   = replace(replace(timestamp(), "-", ""), ":", "")

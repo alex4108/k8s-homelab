@@ -44,6 +44,7 @@ ${virt_customize} --run-command "echo 'kubeuser  ALL=(ALL:ALL) NOPASSWD:ALL' >> 
 # set root password
 password=$(echo $RANDOM | md5sum | head -c 20)
 echo "The root user password for this image is: $password"
+echo "$password" > .root_password
 ${virt_customize} --root-password password:$password
 
 # enable kernel modules

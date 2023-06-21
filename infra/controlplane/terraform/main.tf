@@ -1,6 +1,6 @@
 resource "proxmox_vm_qemu" "controlplane_1" {
   vmid        = 9010
-  name        = "k8s-master-${local.timestamp}-1"
+  name        = var.cp1_hostname
   target_node = local.target_node
   clone       = var.template_id
   onboot      = true # Start nodes on boot
@@ -8,7 +8,7 @@ resource "proxmox_vm_qemu" "controlplane_1" {
   memory      = var.controlplane_memory
   cores       = var.controlplane_cpu
   scsihw      = "virtio-scsi-pci"
-  cicustom    = "network=local:snippets/kube-cloudinit-network.yml,user=local:snippets/kube-cloudinit-user.yml"
+  cicustom    = "network=local:snippets/kube-cloudinit-network.yml,user=local:snippets/cp-1.yml"
   vga {
     type = "virtio"
   }
@@ -22,7 +22,7 @@ resource "time_sleep" "wait_1" {
 resource "proxmox_vm_qemu" "controlplane_2" {
   depends_on  = [time_sleep.wait_1]
   vmid        = 9011
-  name        = "k8s-master-${local.timestamp}-2"
+  name        = var.cp2_hostname
   target_node = local.target_node
   clone       = var.template_id
   onboot      = true # Start nodes on boot
@@ -30,7 +30,7 @@ resource "proxmox_vm_qemu" "controlplane_2" {
   memory      = var.controlplane_memory
   cores       = var.controlplane_cpu
   scsihw      = "virtio-scsi-pci"
-  cicustom    = "network=local:snippets/kube-cloudinit-network.yml,user=local:snippets/kube-cloudinit-user.yml"
+  cicustom    = "network=local:snippets/kube-cloudinit-network.yml,user=local:snippets/cp-2.yml"
   vga {
     type = "virtio"
   }
@@ -45,7 +45,7 @@ resource "time_sleep" "wait_2" {
 resource "proxmox_vm_qemu" "controlplane_3" {
   depends_on  = [time_sleep.wait_2]
   vmid        = 9012
-  name        = "k8s-master-${local.timestamp}-3"
+  name        = var.cp3_hostname
   target_node = local.target_node
   clone       = var.template_id
   onboot      = true # Start nodes on boot
@@ -53,7 +53,7 @@ resource "proxmox_vm_qemu" "controlplane_3" {
   memory      = var.controlplane_memory
   cores       = var.controlplane_cpu
   scsihw      = "virtio-scsi-pci"
-  cicustom    = "network=local:snippets/kube-cloudinit-network.yml,user=local:snippets/kube-cloudinit-user.yml"
+  cicustom    = "network=local:snippets/kube-cloudinit-network.yml,user=local:snippets/cp-3.yml"
   vga {
     type = "virtio"
   }

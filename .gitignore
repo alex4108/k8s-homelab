@@ -1,0 +1,3 @@
+infra/proxmox-images/.root_password
+infra/proxmox-images/*.img
+infra/proxmox-images/*.img.*
