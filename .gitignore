@@ -10,3 +10,4 @@ infra/controlplane/terraform/terraform.tfstate
 infra/controlplane/terraform/terraform.tfstate.backup
 infra/controlplane/terraform/plan.out
 infra/controlplane/terraform/.terraform.lock.hcl
+replace-controlplane.sh
