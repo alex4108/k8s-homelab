@@ -10,7 +10,7 @@ resource "proxmox_vm_qemu" "controlplane_1" {
   scsihw      = "virtio-scsi-pci"
   cicustom    = "network=local:snippets/kube-cloudinit-network.yml,user=local:snippets/cp-1.yml"
   vga {
-    type = "virtio"
+    type = "serial0"
   }
 }
 
@@ -32,7 +32,7 @@ resource "proxmox_vm_qemu" "controlplane_2" {
   scsihw      = "virtio-scsi-pci"
   cicustom    = "network=local:snippets/kube-cloudinit-network.yml,user=local:snippets/cp-2.yml"
   vga {
-    type = "virtio"
+    type = "serial0"
   }
 }
 
@@ -52,10 +52,10 @@ resource "proxmox_vm_qemu" "controlplane_3" {
   agent       = 1    # Qemu guest agent
   memory      = var.controlplane_memory
   cores       = var.controlplane_cpu
+  vga         {
+    type = "serial0"
+  }
   scsihw      = "virtio-scsi-pci"
   cicustom    = "network=local:snippets/kube-cloudinit-network.yml,user=local:snippets/cp-3.yml"
-  vga {
-    type = "virtio"
-  }
 }
 

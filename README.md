@@ -38,6 +38,7 @@ This step uses Terraform & Ansible to deploy control plane VMs & init the contro
 * Ensure the local block target_node names are updated to reflect your environment
 * Ensure the terraform.tf has your proxmox IP/domain
 * Ensure the ansible playbook has the right loadbalancer endpoint for your deployment
+* Modify Makefile to include your intended IP Range for MetalLB
 
 ```
 export PM_USER="your proxmox username"

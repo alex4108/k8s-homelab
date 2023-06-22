@@ -10,4 +10,8 @@ cp $SCRIPTPATH/../proxmox-images/kube-cloudinit-user.yml $cloudinit
 
 echo "  - $join_command" >> $cloudinit
 
-scp $cloudinit $PROXMOX_USER@$PROXMOX_HOST:/var/lib/vz/snippets/kube-worker-cloudinit-user.yml
+for x in 1 2 3; do
+    cp $cloudinit ./worker-${x}.yml
+    sed -i ./worker-${x}.yml
+    scp $cloudinit $PROXMOX_USER@$PROXMOX_HOST:/var/lib/vz/snippets/worker-${x}.yml
+done

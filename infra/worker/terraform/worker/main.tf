@@ -16,7 +16,7 @@ resource "proxmox_vm_qemu" "worker" {
   memory = var.memory
   cores = var.cpu
   scsihw = "virtio-scsi-pci"
-  cicustom = "network=local:snippets/kube-cloudinit-network.yml,user=local:snippets/kube-worker-cloudinit-user.yml"
+  cicustom = "network=local:snippets/kube-cloudinit-network.yml,user=local:snippets/worker-${var.index}.yml"
   vga {
     type = "virtio"
   }

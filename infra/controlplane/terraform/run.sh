@@ -9,13 +9,17 @@ buildCPFiles() {
         cloudInitFile="cp-${x}.yml"
         rm -rf ${cloudInitFile}
         uuid=$(uuidgen | head -c 6)
-        newHostname="ubuntu-2004-${ts}-${uuid}"
+        newHostname="kube-m${x}-${uuid}"
         cp ../../proxmox-images/cloud-config-user.yml ./${cloudInitFile}
-        sed -i "s/hostname: ubuntu.\*/hostname: ${newHostname}/" ${cloudInitFile}
+        sed -i "s/hostname: .*/hostname: ${newHostname}/" ${cloudInitFile}
         scp ./${cloudInitFile} root@$PROXMOX_HOST:/var/lib/vz/snippets/${cloudInitFile}
-        export TF_VAR_cp${!x}hostname="${newHostname}"
+        echo $x
+        set +u
+        export TF_VAR_cp${x}_hostname="${newHostname}"
+        set -u
     done
 }
+
 
 export TF_VAR_template_id="$(cat $SCRIPTPATH/../../proxmox-images/.template_server_name | awk '{print $2}')"
 terraform init
@@ -31,3 +35,4 @@ terraform plan -out=plan.out
 #bash $SCRIPTPATH/approve.sh
 terraform apply -parallelism=1 plan.out 
 bash $SCRIPTPATH/post.sh
+echo "Terraform completed"

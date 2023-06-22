@@ -29,16 +29,22 @@
     - name: download kubectl
       fetch:
         src: /etc/kubernetes/admin.conf
-        dest: kubeconfig
-    - name: install flannel
+    - name: install calico
       shell: | 
-        kubectl apply -f https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml
-    # - name: install metallb
-    #   shell: | 
-    #     kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.13.7/config/manifests/metallb-native.yaml
-    #     # TODO apply the configmap
-    # - name: install democratic-csi for iscsi csi
-    #     https://github.com/democratic-csi/democratic-csi
+        kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.26.1/manifests/tigera-operator.yaml
+        kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.26.1/manifests/custom-resources.yaml
+    - name: copy metallb conf
+      copy:
+        src: ./metallb-conf.yml
+        dest: /tmp/metallb-conf.yml
+    - name: install metallb
+      shell: | 
+        kubectl get configmap kube-proxy -n kube-system -o yaml | \
+          sed -e "s/strictARP: false/strictARP: true/" | \
+          kubectl apply -f - -n kube-system
+
+        kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.13.10/config/manifests/metallb-native.yaml
+        kubectl apply -f /tmp/metallb-conf.yml
 - hosts: controlplane-others
   become: yes
   become_method: sudo

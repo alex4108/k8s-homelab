@@ -65,9 +65,9 @@ ${virt_customize} --run-command "mkdir -p /etc/containerd && containerd config d
 ${virt_customize} --run-command "systemctl restart containerd && systemctl enable containerd"
 
 # install democratic-csi requirements
-${virt_customize} --run-command "apt-get install -y open-iscsi lsscsi sg3-utils multipath-tools scsitools"
+${virt_customize} --run-command "apt-get install -y open-iscsi lsscsi sg3-utils multipath-tools scsitools nfs-common cifs-utils libnfs-utils"
 ${virt_customize} --run-command "echo -e \"defaults {\n    user_friendly_names yes\n    find_multipaths yes\n}\" > /etc/multipath.conf"
 
-${virt_sysprep} --operations "-cron-spool,-firewall-rules,-pam-data,-passwd-backups,-ssh-userdir,-user-account"
+${virt_sysprep} --operations "machine-id,udev-persistent-net,dhcp-client-state,dhcp-server-state,-cron-spool,-firewall-rules,-pam-data,-passwd-backups,-ssh-userdir,-user-account"
 
 echo "Finished customize"

@@ -16,3 +16,4 @@ done
 # Delete the image
 $proxmox_ssh "qm destroy 9000 --destroy-unreferenced-disks 1 --purge 1 --skiplock 1"
 
+echo "Destroy complete."

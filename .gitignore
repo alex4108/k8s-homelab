@@ -1,3 +1,12 @@
 infra/proxmox-images/.root_password
 infra/proxmox-images/*.img
 infra/proxmox-images/*.img.*
+infra/proxmox-images/.template_server_name
+infra/controlplane/terraform/.terraform/providers/registry.terraform.io/telmate/proxmox/2.9.14/linux_amd64/terraform-provider-proxmox_v2.9.14
+infra/controlplane/terraform/.terraform/providers/registry.terraform.io/telmate/proxmox/2.9.14/linux_amd64/README.md
+infra/controlplane/terraform/.terraform/providers/registry.terraform.io/telmate/proxmox/2.9.14/linux_amd64/LICENSE
+infra/controlplane/terraform/.terraform/providers/registry.terraform.io/hashicorp/time/0.9.1/linux_amd64/terraform-provider-time_v0.9.1_x5
+infra/controlplane/terraform/terraform.tfstate
+infra/controlplane/terraform/terraform.tfstate.backup
+infra/controlplane/terraform/plan.out
+infra/controlplane/terraform/.terraform.lock.hcl
