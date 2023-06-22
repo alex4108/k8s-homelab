@@ -1,0 +1,35 @@
+- hosts: proxmox-hosts
+  user: root
+  tasks:
+    - name: Install deps
+      shell: |
+        apt install -y libsasl2-modules mailutils postfix-pcre
+        update-ca-certificates --fresh
+        echo "{{ sasl }}" > /etc/postfix/sasl_passwd
+        chmod 600 /etc/postfix/sasl_passwd
+        postmap hash:/etc/postfix/sasl_passwd
+        sed -i 's/relayhost =/#relayhost =/g' /etc/postfix/main.cf
+    - name: add postfix conf
+      blockinfile: 
+        state: present
+        insertafter: EOF
+        dest: /etc/postfix/main.cf
+        content: |
+          relayhost = mailu.home.arpa:587
+          smtp_tls_CAfile = /etc/ssl/certs/ca-certificates.crt
+          smtp_enforce_tls = yes
+          smtpd_use_tls = yes
+          smtp_sasl_auth_enable = yes
+          smtp_sasl_security_options =
+          smtp_sasl_password_maps = hash:/etc/postfix/sasl_passwd
+          smtp_tls_session_cache_database = btree:/var/lib/postfix/smtp_tls_session_cache
+          smtp_tls_session_cache_timeout = 3600s
+          smtp_tls_security_level = encrypt
+          smtp_header_checks = regexp:/etc/postfix/header_checks
+    - name: add postfix subject conf
+      shell: |
+        echo "/^From:[[:space:]]+(.*)/ REPLACE From: \"root@$(hostname)\" <proxmox@{{ maildomain }}>" > /etc/postfix/header_checks
+    - name: reload and test
+      shell: |
+        postfix reload
+        echo "Test email from Proxmox: $(hostname)" | /usr/bin/proxmox-mail-forward

@@ -1,5 +1,5 @@
 ---
-- hosts: controlplane-others
+- hosts: controlplanes
   become: yes
   become_method: sudo
   tasks:
@@ -29,6 +29,7 @@
     - name: download kubectl
       fetch:
         src: /etc/kubernetes/admin.conf
+        dest: /tmp/kubeconfig
     - name: install calico
       shell: | 
         kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.26.1/manifests/tigera-operator.yaml

@@ -1,14 +1,20 @@
-
+# Needed Things
+* download kubectl step fails
+* code for workers
 * install democratic
 * configure democratic
+
+# Cluster components I should have
+( as requirements evolve )
 * install external-dns
 * configure external-dns
 * install traefik
 * configure traefik
+* install cloudflared / argo tunnels?
 
 Done!? Start moving stuff over and see if we can get big workers so we can run things like Mailu and Terraria?
 
-Apps
+# Apps!!
 * Put another HA Pihole on the other nodes just in case...
 ** Something about using keepalived to ensure one of the VMs has the pihole IP
 

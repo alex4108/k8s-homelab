@@ -16,4 +16,15 @@ done
 # Delete the image
 $proxmox_ssh "qm destroy 9000 --destroy-unreferenced-disks 1 --purge 1 --skiplock 1"
 
+# TODO destroy worker VMs
+
+# Blast the terraform states
+for path in infra/controlplane/terraform infra/worker/terraform/; do
+    rm -rf $SCRIPTPATH/$path/.terraform
+    rm -rf $SCRIPTPATH/$path/terraform.tfstate
+    rm -rf $SCRIPTPATH/$path/terraform.tfstate.backup
+    rm -rf $SCRIPTPATH/$path/.terraform.lock.hcl
+    rm -rf $SCRIPTPATH/$path/.terraform.tfstate.lock.info
+done
+
 echo "Destroy complete."

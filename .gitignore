@@ -11,3 +11,6 @@ infra/controlplane/terraform/terraform.tfstate.backup
 infra/controlplane/terraform/plan.out
 infra/controlplane/terraform/.terraform.lock.hcl
 replace-controlplane.sh
+proxmox-mail-config/.sasl
+proxmox-mail-config/.maildomain
+infra/controlplane/ansible/metallb-conf.yml

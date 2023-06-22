@@ -1,5 +1,5 @@
 #cloud-config
-hostname: kube-m3-e3da9e
+hostname: kube-m3-7a8a1b
 manage_etc_hosts: true
 user: alex
 # "secret"
