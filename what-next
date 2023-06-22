@@ -1,14 +1,6 @@
-* fix cloud-init so hostnames aren't clashing and causing dupe dhcp leases
-    * can't use shell in cloud-init hostname field, will need a per-VM cloud-init!?
-    * can I set the hostname in runcmd, disable dhcp via netplan, then _manually_ enable DHCP?
-* fix `make controlplane` crashes on ansible
-* join workers
-* install calico?
-* configure calico
+
 * install democratic
 * configure democratic
-* install metallb
-* configure metallb
 * install external-dns
 * configure external-dns
 * install traefik
@@ -17,8 +9,8 @@
 Done!? Start moving stuff over and see if we can get big workers so we can run things like Mailu and Terraria?
 
 Apps
-* Put another HA Pihole on the other node just in case...
-** Configure HAProxy UDP Balancer for them?
+* Put another HA Pihole on the other nodes just in case...
+** Something about using keepalived to ensure one of the VMs has the pihole IP
 
 * Teamspeak3
 * Mailu
